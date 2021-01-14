@@ -1,4 +1,4 @@
-# Oracle Virtual Schemas 1.0.0, released 2021-01-XX
+# Oracle Virtual Schemas 1.0.0, released 2021-01-14
 
 Code name: Migration from the virtual-schemas repository
 

@@ -33,7 +33,7 @@ You need to specify the following settings when adding the JDBC driver via EXAOp
 
 ## Installing the Adapter Script
 
-Upload the latest available release of [Virtual Schema JDBC Adapter](https://github.com/exasol/virtual-schemas/releases) to Bucket FS.
+Upload the latest available release of [SQL Server Virtual Schema](https://github.com/exasol/sqlserver-virtual-schema/releases) to Bucket FS.
 
 Then create a schema to hold the adapter script.
 

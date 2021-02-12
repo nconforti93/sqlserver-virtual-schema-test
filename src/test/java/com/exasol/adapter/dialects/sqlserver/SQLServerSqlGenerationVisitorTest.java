@@ -1,12 +1,11 @@
 package com.exasol.adapter.dialects.sqlserver;
 
-import static com.exasol.adapter.dialects.VisitorAssertions.assertSqlNodeConvertedToAsterisk;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,9 @@ import com.exasol.adapter.AdapterException;
 import com.exasol.adapter.AdapterProperties;
 import com.exasol.adapter.adapternotes.ColumnAdapterNotes;
 import com.exasol.adapter.adapternotes.ColumnAdapterNotesJsonConverter;
-import com.exasol.adapter.dialects.*;
+import com.exasol.adapter.dialects.SqlDialect;
+import com.exasol.adapter.dialects.SqlDialectFactory;
+import com.exasol.adapter.dialects.rewriting.SqlGenerationContext;
 import com.exasol.adapter.metadata.*;
 import com.exasol.adapter.sql.*;
 
@@ -39,25 +40,6 @@ class SQLServerSqlGenerationVisitorTest {
     }
 
     @Test
-    void testVisitSqlSelectListSelectStar() throws AdapterException {
-        final SqlSelectList sqlSelectList = SqlSelectList.createSelectStarSelectList();
-        final TableMetadata tableMetadata = new TableMetadata("", "", Collections.emptyList(), "");
-        final SqlTable fromClause = new SqlTable("test_table", tableMetadata);
-        final SqlNode sqlStatementSelect = SqlStatementSelect.builder().selectList(sqlSelectList).fromClause(fromClause)
-                .build();
-        sqlSelectList.setParent(sqlStatementSelect);
-        assertSqlNodeConvertedToAsterisk(sqlSelectList, this.visitor);
-    }
-
-    @Test
-    void testVisitSqlSelectListSelectStarRequiresCast() throws AdapterException {
-        final SqlSelectList sqlSelectList = createSqlSelectStarListWithOneColumn(
-                "{\"jdbcDataType\":-155, \"typeName\":\"datetimeoffset\"}",
-                DataType.createVarChar(36, DataType.ExaCharset.UTF8));
-        assertThat(this.visitor.visit(sqlSelectList), equalTo("CAST([test_column] as VARCHAR(34))"));
-    }
-
-    @Test
     void testVisitSqlStatementSelect() throws AdapterException {
         final SqlStatementSelect select = (SqlStatementSelect) getTestSqlNode();
         assertThat(this.visitor.visit(select), //
@@ -66,25 +48,6 @@ class SQLServerSqlGenerationVisitorTest {
                         + " WHERE 1 < [USER_ID]" //
                         + " GROUP BY [USER_ID] HAVING 1 < COUNT_BIG([URL])" //
                         + " ORDER BY [USER_ID] NULLS LAST"));
-    }
-
-    @Test
-    void testVisitSqlSelectListSelectStarThrowsException() {
-        final SqlSelectList sqlSelectList = createSqlSelectStarListWithOneColumn("",
-                DataType.createVarChar(10, DataType.ExaCharset.UTF8));
-        assertThrows(SqlGenerationVisitorException.class, () -> this.visitor.visit(sqlSelectList));
-    }
-
-    private SqlSelectList createSqlSelectStarListWithOneColumn(final String adapterNotes, final DataType dataType) {
-        final SqlSelectList selectList = SqlSelectList.createSelectStarSelectList();
-        final List<ColumnMetadata> columns = new ArrayList<>();
-        columns.add(ColumnMetadata.builder().name("test_column").adapterNotes(adapterNotes).type(dataType).build());
-        final TableMetadata tableMetadata = new TableMetadata("", "", columns, "");
-        final SqlTable fromClause = new SqlTable("", tableMetadata);
-        final SqlNode sqlStatementSelect = SqlStatementSelect.builder().selectList(selectList).fromClause(fromClause)
-                .build();
-        selectList.setParent(sqlStatementSelect);
-        return selectList;
     }
 
     @CsvSource({ "ADD_DAYS, DAY", //
@@ -262,5 +225,15 @@ class SQLServerSqlGenerationVisitorTest {
                     .build());
             return new TableMetadata("CLICKS", "", columns, "");
         }
+    }
+
+    @Test
+    void testVisitLiteralBoolTrue() {
+        assertThat(this.visitor.visit(new SqlLiteralBool(true)), equalTo("1 = 1"));
+    }
+
+    @Test
+    void testVisitLiteralBoolFalse() {
+        assertThat(this.visitor.visit(new SqlLiteralBool(false)), equalTo("1 = 0"));
     }
 }

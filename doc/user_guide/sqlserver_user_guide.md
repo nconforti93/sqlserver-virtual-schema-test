@@ -46,7 +46,7 @@ The SQL statement below creates the adapter script, defines the Java class that 
 ```sql
 CREATE OR REPLACE JAVA ADAPTER SCRIPT SCHEMA_FOR_VS_SCRIPT.ADAPTER_SCRIPT_SQLSERVER AS
   %scriptclass com.exasol.adapter.RequestDispatcher;
-  %jar /buckets/<BFS service>/<bucket>/virtual-schema-dist-8.0.0-sqlserver-1.0.0.jar;
+  %jar /buckets/<BFS service>/<bucket>/virtual-schema-dist-9.0.1-sqlserver-2.0.0.jar;
   %jar /buckets/<BFS service>/<bucket>/mssql-jdbc-<version>.jre8.jar;
 /
 ```
@@ -70,7 +70,6 @@ Below you see how an SQL Server Virtual Schema is created.
 CREATE VIRTUAL SCHEMA <virtual schema name>
     USING SCHEMA_FOR_VS_SCRIPT.ADAPTER_SCRIPT_SQLSERVER
     WITH
-    SQL_DIALECT = 'SQLSERVER'
     CONNECTION_NAME = 'SQLSERVER_JDBC_CONNECTION'
     CATALOG_NAME   = '<database name>'
     SCHEMA_NAME = '<schema name>';
@@ -125,6 +124,11 @@ XML                 |  ×        |                           |
 
 In the following matrix you find combinations of JDBC driver and dialect version that we tested.
 
-| Virtual Schema Version | SQL SERVER Version           | Driver Name       | Driver Version |
-|------------------------|------------------------------|-------------------|----------------|
-| Latest                 | 2019-CU6-ubuntu-16.04 8.0.20 | MS SQL JDBC JRE 8 | 8.4.0          |
+| Virtual Schema Version | SQL SERVER Version    | Driver Name       | Driver Version |
+|------------------------|-----------------------|-------------------|----------------|
+| Latest                 | 2019-CU8-ubuntu-16.04 | MS SQL JDBC JRE 8 | 9.0.2          |
+
+
+## Known Issues
+
+* Select with boolean expressions, such as `SELECT 1 = 1`, `SELECT 1 = 0` or `SELECT TRUE` won't work with this Virtual Schema because SQL Server doesn't support a boolean data type.

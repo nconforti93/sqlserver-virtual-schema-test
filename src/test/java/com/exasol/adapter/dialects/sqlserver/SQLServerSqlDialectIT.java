@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.sql.*;
 import java.time.LocalDate;
@@ -46,7 +47,7 @@ class SQLServerSqlDialectIT {
     private static final String VIRTUAL_SCHEMA_JDBC = "VIRTUAL_SCHEMA_JDBC";
     private static final String JDBC_DRIVER_NAME = "mssql-jdbc.jar";
     private static final Path JDBC_DRIVER_PATH = Path.of("target/sqlserver-driver/" + JDBC_DRIVER_NAME);
-    public static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "virtual-schema-dist-9.0.1-sqlserver-2.0.0.jar";
+    public static final String VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION = "virtual-schema-dist-9.0.3-sqlserver-2.0.1.jar";
     public static final String EXASOL_DOCKER_IMAGE_REFERENCE = "exasol/docker-db:7.0.6";
     public static final Path PATH_TO_VIRTUAL_SCHEMAS_JAR = Path.of("target", VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     public static final String SCHEMA_EXASOL = "SCHEMA_EXASOL";
@@ -65,7 +66,7 @@ class SQLServerSqlDialectIT {
                     .withLogConsumer(new Slf4jLogConsumer(LOGGER)).withReuse(true);
 
     @BeforeAll
-    static void beforeAll() throws InterruptedException, BucketAccessException, TimeoutException, SQLException {
+    static void beforeAll() throws BucketAccessException, TimeoutException, SQLException, FileNotFoundException {
         uploadDriverToBucket();
         uploadVsJarToBucket();
         createSqlServerSchema();
@@ -103,15 +104,15 @@ class SQLServerSqlDialectIT {
         return schema.createAdapterScript(ADAPTER_SCRIPT_EXASOL, JAVA, content);
     }
 
-    private static void uploadDriverToBucket() throws InterruptedException, BucketAccessException, TimeoutException {
-        Bucket bucket = EXASOL_CONTAINER.getDefaultBucket();
+    private static void uploadDriverToBucket() throws BucketAccessException, TimeoutException, FileNotFoundException {
+        final Bucket bucket = EXASOL_CONTAINER.getDefaultBucket();
         final Path pathToSettingsFile = Path.of("src", "test", "resources", JDBC_DRIVER_CONFIGURATION_FILE_NAME);
         bucket.uploadFile(pathToSettingsFile, "drivers/jdbc/" + JDBC_DRIVER_CONFIGURATION_FILE_NAME);
         bucket.uploadFile(JDBC_DRIVER_PATH, "drivers/jdbc/" + JDBC_DRIVER_NAME);
     }
 
-    private static void uploadVsJarToBucket() throws InterruptedException, BucketAccessException, TimeoutException {
-        Bucket bucket = EXASOL_CONTAINER.getDefaultBucket();
+    private static void uploadVsJarToBucket() throws BucketAccessException, TimeoutException, FileNotFoundException {
+        final Bucket bucket = EXASOL_CONTAINER.getDefaultBucket();
         bucket.uploadFile(PATH_TO_VIRTUAL_SCHEMAS_JAR, VIRTUAL_SCHEMAS_JAR_NAME_AND_VERSION);
     }
 

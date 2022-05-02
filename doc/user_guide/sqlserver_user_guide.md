@@ -19,12 +19,12 @@ Now register the driver in EXAOperation:
 
 You need to specify the following settings when adding the JDBC driver via EXAOperation.
 
-| Parameter | Value                                               |
-|-----------|-----------------------------------------------------|
-| Name      | `SQLSERVER`                                        |
-| Main      | `com.microsoft.sqlserver.jdbc.SQLServerDriver`|
-| Prefix    | `jdbc:sqlserver:`                                 |
-| Files     | `mssql-jdbc-<version>.jre8.jar`                 |
+| Parameter | Value                                          |
+|-----------|------------------------------------------------|
+| Name      | `SQLSERVER`                                    |
+| Main      | `com.microsoft.sqlserver.jdbc.SQLServerDriver` |
+| Prefix    | `jdbc:sqlserver:`                              |
+| Files     | `mssql-jdbc-<version>.jre8.jar`                |
 
 ## Uploading the JDBC Driver to EXAOperation
 
@@ -46,7 +46,7 @@ The SQL statement below creates the adapter script, defines the Java class that 
 ```sql
 CREATE OR REPLACE JAVA ADAPTER SCRIPT SCHEMA_FOR_VS_SCRIPT.ADAPTER_SCRIPT_SQLSERVER AS
   %scriptclass com.exasol.adapter.RequestDispatcher;
-  %jar /buckets/<BFS service>/<bucket>/virtual-schema-dist-9.0.3-sqlserver-2.0.2.jar;
+  %jar /buckets/<BFS service>/<bucket>/virtual-schema-dist-9.0.4-sqlserver-2.0.3.jar;
   %jar /buckets/<BFS service>/<bucket>/mssql-jdbc-<version>.jre8.jar;
 /
 ```
@@ -124,9 +124,9 @@ XML                 |  ×        |                           |
 
 In the following matrix you find combinations of JDBC driver and dialect version that we tested.
 
-| Virtual Schema Version | SQL SERVER Version    | Driver Name       | Driver Version |
-|------------------------|-----------------------|-------------------|----------------|
-| Latest                 | 2019-CU8-ubuntu-16.04 | MS SQL JDBC JRE 8 | 9.0.2          |
+| Virtual Schema Version | SQL SERVER Version     | Driver Name       | Driver Version |
+|------------------------|------------------------|-------------------|----------------|
+| Latest                 | 2019-CU15-ubuntu-20.04 | MS SQL JDBC JRE 8 | 9.4.1          |
 
 
 ## Known Issues

@@ -1,5 +1,7 @@
 # Microsoft SQL Server SQL Dialect User Guide
 
+THIS IS A TEST
+
 [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2017) is a Relational Database Management System (RDBMS) developed by Microsoft. 
 
 ## Registering the JDBC Driver in EXAOperation
